@@ -17,14 +17,22 @@ const routes = [
     component: () => import('@/views/products/ProductDetail.vue')
   },
   {
+    path: '/solutions',
+    name: 'Solutions',
+    component: () => import('@/views/Solutions.vue')
+  },
+  {
+    path: '/solutions/:type',
+    name: 'SolutionDetail',
+    component: () => import('@/views/solutions/SolutionDetail.vue')
+  },
+  {
     path: '/about',
-    name: 'About',
     component: () => import('@/views/about/About.vue'),
-    redirect: '/about/company',
     children: [
       {
-        path: 'company',
-        name: 'Company',
+        path: '',
+        name: 'About',
         component: () => import('@/views/about/Company.vue')
       },
       {
@@ -48,7 +56,14 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
 })
 
 export default router

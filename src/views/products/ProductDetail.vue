@@ -4,29 +4,20 @@
     <section class="product-hero">
       <div class="container">
         <div class="product-hero__content">
-          <h1>{{ product.name }}</h1>
-          <p class="subtitle">{{ product.subtitle }}</p>
-          <div class="price">{{ product.price }}</div>
-          <button class="btn btn--primary">立即购买</button>
+          <h1>{{ currentProduct?.name }}</h1>
+          <p class="subtitle">{{ currentProduct?.description }}</p>
+          <div class="features-list">
+            <div v-for="(feature, index) in currentProduct?.features" 
+                 :key="index" 
+                 class="feature-item">
+              <span class="feature-icon">✓</span>
+              <span>{{ feature }}</span>
+            </div>
+          </div>
+          <button class="btn btn--primary">立即咨询</button>
         </div>
         <div class="product-hero__image">
-          <img :src="product.heroImage" :alt="product.name">
-        </div>
-      </div>
-    </section>
-
-    <!-- 产品特点 -->
-    <section class="product-features">
-      <div class="container">
-        <h2>产品特点</h2>
-        <div class="features-grid">
-          <div v-for="feature in product.features" :key="feature.id" class="feature-card">
-            <div class="feature-image">
-              <img :src="feature.image" :alt="feature.title">
-            </div>
-            <h3>{{ feature.title }}</h3>
-            <p>{{ feature.description }}</p>
-          </div>
+          <img :src="require('@/assets/images/test2.png')" :alt="currentProduct?.name">
         </div>
       </div>
     </section>
@@ -36,12 +27,21 @@
       <div class="container">
         <h2>产品规格</h2>
         <div class="specs-grid">
-          <div v-for="(spec, category) in product.specifications" :key="category" class="spec-group">
-            <h3>{{ category }}</h3>
+          <div class="spec-group">
+            <h3>基本参数</h3>
             <ul>
-              <li v-for="(value, key) in spec" :key="key">
-                <span class="spec-label">{{ key }}:</span>
-                <span class="spec-value">{{ value }}</span>
+              <li v-for="(spec, index) in specifications.basic" :key="index">
+                <span class="spec-label">{{ spec.label }}:</span>
+                <span class="spec-value">{{ spec.value }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="spec-group">
+            <h3>功能特点</h3>
+            <ul>
+              <li v-for="(spec, index) in specifications.features" :key="index">
+                <span class="spec-label">{{ spec.label }}:</span>
+                <span class="spec-value">{{ spec.value }}</span>
               </li>
             </ul>
           </div>
@@ -54,13 +54,20 @@
       <div class="container">
         <h2>相关产品</h2>
         <div class="products-grid">
-          <div v-for="item in product.relatedProducts" :key="item.id" class="product-card">
+          <div v-for="product in relatedProducts" 
+               :key="product.id" 
+               class="product-card"
+               @click="goToProduct(product.id)">
             <div class="product-image">
-              <img :src="item.image" :alt="item.name">
+              <img :src="require('@/assets/images/test2.png')" :alt="product.name">
             </div>
-            <h3>{{ item.name }}</h3>
-            <p>{{ item.description }}</p>
-            <router-link :to="'/products/' + item.id" class="btn btn--secondary">了解更多</router-link>
+            <div class="product-content">
+              <h3>{{ product.name }}</h3>
+              <p>{{ product.description }}</p>
+              <div class="learn-more">
+                了解更多 <span class="arrow">→</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -69,188 +76,121 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import testImage from '@/assets/images/test2.png';
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const productId = route.params.id;
 
 // 产品数据
-const productsData = {
-  locks: {
-    id: 'locks',
-    name: '智能门锁 N100',
-    subtitle: '指纹解锁，APP远程控制，多重安全防护',
-    price: '¥1299',
-    heroImage: testImage,
+const products = {
+  'lock-1': {
+    id: 'lock-1',
+    category: 'lock',
+    name: '智能指纹锁 Pro',
+    description: '多重解锁方式，高安全性能，简约时尚设计',
     features: [
-      {
-        id: 1,
-        title: '指纹识别',
-        description: '0.3秒快速识别，准确率99.9%',
-        image: testImage
-      },
-      {
-        id: 2,
-        title: '远程控制',
-        description: '手机APP随时查看门锁状态，远程开门',
-        image: testImage
-      },
-      {
-        id: 3,
-        title: '多重防护',
-        description: '多重加密技术，确保安全',
-        image: testImage
-      }
-    ],
-    specifications: {
-      基本参数: {
-        '产品尺寸': '370×76×27mm',
-        '电池类型': '4节5号电池',
-        '待机时间': '12个月',
-        '材质': '铝合金'
-      },
-      功能特点: {
-        '开锁方式': '指纹/密码/APP/钥匙',
-        '指纹容量': '100枚',
-        '密码容量': '50组',
-        '防盗报警': '支持'
-      }
-    },
-    relatedProducts: [
-      {
-        id: 'cameras',
-        name: '智能摄像机',
-        description: '1080P高清画质，AI人形检测',
-        image: testImage
-      },
-      {
-        id: 'switches',
-        name: '智能开关',
-        description: '随时控制家中电器，定时开关',
-        image: testImage
-      }
+      '指纹/密码/NFC多重解锁',
+      '防撬报警功能',
+      'APP远程控制',
+      '临时密码管理'
     ]
   },
-  cameras: {
-    id: 'cameras',
-    name: '智能摄像机 G3',
-    subtitle: '2K超清画质，AI智能识别，双向通话',
-    price: '¥699',
-    heroImage: testImage,
+  'lock-2': {
+    id: 'lock-2',
+    category: 'lock',
+    name: '人脸识别门锁',
+    description: '先进的3D人脸识别技术，快速准确的开锁体验',
     features: [
-      {
-        id: 1,
-        title: '2K超清画质',
-        description: '2K超高清分辨率，画面清晰细腻',
-        image: testImage
-      },
-      {
-        id: 2,
-        title: 'AI人形检测',
-        description: '智能识别人形，减少误报',
-        image: testImage
-      },
-      {
-        id: 3,
-        title: '双向通话',
-        description: '内置麦克风和扬声器，实现远程对话',
-        image: testImage
-      }
-    ],
-    specifications: {
-      基本参数: {
-        '分辨率': '2560×1440',
-        '视角': '140°广角',
-        '夜视': '10米红外夜视',
-        '供电方式': 'DC 5V/1A'
-      },
-      功能特点: {
-        '存储方式': '最大支持128G TF卡/云存储',
-        '网络协议': 'Wi-Fi IEEE 802.11 b/g/n 2.4GHz',
-        '移动侦测': '支持',
-        '云台转动': '水平355°，垂直85°'
-      }
-    },
-    relatedProducts: [
-      {
-        id: 'locks',
-        name: '智能门锁',
-        description: '指纹解锁，APP远程控制',
-        image: testImage
-      },
-      {
-        id: 'switches',
-        name: '智能开关',
-        description: '随时控制家中电器，定时开关',
-        image: testImage
-      }
+      '3D人脸识别',
+      '防假体验证',
+      '红外夜视',
+      '一键开锁'
     ]
   },
-  switches: {
-    id: 'switches',
-    name: '智能开关 H1',
-    subtitle: '随时控制家中电器，定时开关，场景联动',
-    price: '¥199',
-    heroImage: testImage,
+  'camera-1': {
+    id: 'camera-1',
+    category: 'camera',
+    name: '智能摄像头 2K',
+    description: '超清画质，AI智能识别，全天候安全守护',
     features: [
-      {
-        id: 1,
-        title: '远程控制',
-        description: '手机APP随时控制家中电器',
-        image: testImage
-      },
-      {
-        id: 2,
-        title: '定时设置',
-        description: '自定义定时开关，生活更智能',
-        image: testImage
-      },
-      {
-        id: 3,
-        title: '场景联动',
-        description: '与其他智能设备联动，打造智能场景',
-        image: testImage
-      }
-    ],
-    specifications: {
-      基本参数: {
-        '产品尺寸': '86×86×32mm',
-        '额定电压': 'AC 100-240V',
-        '最大负载': '2200W',
-        '通信方式': 'Wi-Fi/Zigbee'
-      },
-      功能特点: {
-        '控制方式': 'APP/语音/触控',
-        '定时功能': '支持',
-        '过载保护': '支持',
-        '状态反馈': '支持'
-      }
-    },
-    relatedProducts: [
-      {
-        id: 'locks',
-        name: '智能门锁',
-        description: '指纹解锁，APP远程控制',
-        image: testImage
-      },
-      {
-        id: 'cameras',
-        name: '智能摄像机',
-        description: '1080P高清画质，AI人形检测',
-        image: testImage
-      }
+      '2K超清画质',
+      '人形检测',
+      '双向通话',
+      '移动追踪'
+    ]
+  },
+  'camera-2': {
+    id: 'camera-2',
+    category: 'camera',
+    name: '室外防水摄像头',
+    description: 'IP66防水，夜视增强，户外安防必备',
+    features: [
+      'IP66防水防尘',
+      '30米夜视',
+      '异常声音检测',
+      '云存储支持'
+    ]
+  },
+  'switch-1': {
+    id: 'switch-1',
+    category: 'switch',
+    name: '智能开关面板',
+    description: '简约设计，触控操作，场景联动',
+    features: [
+      '触控操作',
+      'LED背光',
+      '情景模式',
+      'APP控制'
+    ]
+  },
+  'switch-2': {
+    id: 'switch-2',
+    category: 'switch',
+    name: '智能调光开关',
+    description: '无极调光，自动调节，节能环保',
+    features: [
+      '无极调光',
+      '定时控制',
+      '场景联动',
+      '过载保护'
     ]
   }
 };
 
-const product = ref(productsData[productId]);
+const specifications = {
+  basic: [
+    { label: '产品尺寸', value: '370×76×27mm' },
+    { label: '电池类型', value: '4节5号电池' },
+    { label: '待机时间', value: '12个月' },
+    { label: '材质', value: '铝合金' }
+  ],
+  features: [
+    { label: '开锁方式', value: '指纹/密码/APP/钥匙' },
+    { label: '指纹容量', value: '100枚' },
+    { label: '密码容量', value: '50组' },
+    { label: '防盗报警', value: '支持' }
+  ]
+};
+
+const currentProduct = computed(() => products[productId]);
+
+const relatedProducts = computed(() => {
+  if (!currentProduct.value) return [];
+  return Object.values(products)
+    .filter(p => p.category === currentProduct.value.category && p.id !== currentProduct.value.id)
+    .slice(0, 2);
+});
+
+const goToProduct = (id) => {
+  router.push(`/products/${id}`);
+};
 </script>
 
 <style lang="scss" scoped>
 .product-detail {
-  padding-top: 80px;
+  padding-top: 60px;
 }
 
 .product-hero {
@@ -270,19 +210,14 @@ const product = ref(productsData[productId]);
     h1 {
       font-size: 3rem;
       margin-bottom: 1rem;
-      font-weight: 600;
+      color: #333;
     }
 
     .subtitle {
       font-size: 1.2rem;
       color: #666;
       margin-bottom: 2rem;
-    }
-
-    .price {
-      font-size: 2rem;
-      color: #007aff;
-      margin-bottom: 2rem;
+      line-height: 1.6;
     }
   }
 
@@ -292,197 +227,186 @@ const product = ref(productsData[productId]);
     img {
       width: 100%;
       height: auto;
-      object-fit: cover;
-      border-radius: 20px;
+      border-radius: 12px;
     }
   }
 }
 
-.product-features {
-  padding: 80px 0;
-
-  h2 {
-    text-align: center;
-    margin-bottom: 60px;
-    font-size: 2.5rem;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
-  }
-
-  .feature-card {
-    text-align: center;
-    padding: 30px;
-    background: #fff;
-    border-radius: 20px;
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: translateY(-10px);
-    }
-
-    .feature-image {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 20px;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-
-    h3 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    }
-
-    p {
-      color: #666;
-    }
-  }
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.product-specs {
-  padding: 80px 0;
-  background: #f8f8f8;
-
-  h2 {
-    text-align: center;
-    margin-bottom: 60px;
-    font-size: 2.5rem;
-  }
-
-  .specs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
-  }
-
-  .spec-group {
-    background: #fff;
-    padding: 30px;
-    border-radius: 20px;
-
-    h3 {
-      margin-bottom: 20px;
-      font-size: 1.5rem;
-    }
-
-    ul {
-      list-style: none;
-
-      li {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-
-      .spec-label {
-        color: #666;
-      }
-
-      .spec-value {
-        font-weight: 500;
-      }
-    }
-  }
+.features-list {
+  margin-bottom: 2rem;
 }
 
-.related-products {
-  padding: 80px 0;
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+  color: #666;
 
-  h2 {
-    text-align: center;
-    margin-bottom: 60px;
-    font-size: 2.5rem;
-  }
-
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
-  }
-
-  .product-card {
-    background: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: translateY(-10px);
-    }
-
-    .product-image {
-      height: 200px;
-      
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-
-    h3 {
-      padding: 20px 20px 10px;
-      font-size: 1.2rem;
-    }
-
-    p {
-      padding: 0 20px 20px;
-      color: #666;
-    }
-
-    .btn {
-      margin: 0 20px 20px;
-    }
+  .feature-icon {
+    color: #007aff;
   }
 }
 
 .btn {
-  display: inline-block;
   padding: 12px 30px;
-  border-radius: 30px;
-  text-decoration: none;
-  transition: all 0.3s ease;
+  border-radius: 25px;
+  font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
-  border: none;
+  transition: all 0.3s ease;
 
   &--primary {
     background: #007aff;
     color: white;
+    border: none;
 
     &:hover {
       background: darken(#007aff, 10%);
     }
   }
+}
 
-  &--secondary {
-    background: #f5f5f5;
+section {
+  padding: 80px 0;
+
+  h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 60px;
     color: #333;
+  }
+}
 
-    &:hover {
-      background: darken(#f5f5f5, 10%);
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.spec-group {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .spec-label {
+    color: #666;
+  }
+
+  .spec-value {
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-10px);
+  }
+}
+
+.product-image {
+  height: 240px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.1);
+  }
+}
+
+.product-content {
+  padding: 30px;
+
+  h3 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+}
+
+.learn-more {
+  color: #007aff;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  .arrow {
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: darken(#007aff, 10%);
+
+    .arrow {
+      transform: translateX(5px);
     }
   }
 }
 
 @media (max-width: 768px) {
   .product-hero {
+    padding: 40px 0;
+
     .container {
       flex-direction: column;
-      text-align: center;
+      gap: 30px;
     }
 
     &__content {
@@ -492,12 +416,18 @@ const product = ref(productsData[productId]);
     }
   }
 
-  .product-features,
-  .product-specs,
-  .related-products {
+  section {
+    padding: 40px 0;
+
     h2 {
       font-size: 2rem;
+      margin-bottom: 40px;
     }
+  }
+
+  .product-card {
+    max-width: 400px;
+    margin: 0 auto;
   }
 }
 </style>

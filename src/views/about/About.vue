@@ -3,7 +3,7 @@
     <div class="about-nav">
       <div class="container">
         <nav class="subnav">
-          <router-link to="/about/company" class="subnav-item">公司介绍</router-link>
+          <router-link to="/about" class="subnav-item" exact>公司介绍</router-link>
           <router-link to="/about/culture" class="subnav-item">企业文化</router-link>
           <router-link to="/about/join" class="subnav-item">加入我们</router-link>
           <router-link to="/about/contact" class="subnav-item">联系我们</router-link>
@@ -19,6 +19,12 @@
 <style lang="scss" scoped>
 .about {
   min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .about-nav {
@@ -80,6 +86,11 @@
     justify-content: flex-start;
     padding-left: 20px;
     padding-right: 20px;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     &-item {
       font-size: 1rem;

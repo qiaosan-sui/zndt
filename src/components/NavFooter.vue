@@ -5,7 +5,7 @@
         <div class="footer__column">
           <h3>关于我们</h3>
           <ul>
-            <li><router-link to="/about/company">公司介绍</router-link></li>
+            <li><router-link to="/about">公司介绍</router-link></li>
             <li><router-link to="/about/culture">企业文化</router-link></li>
             <li><router-link to="/about/join">加入我们</router-link></li>
             <li><router-link to="/about/contact">联系我们</router-link></li>
@@ -15,10 +15,10 @@
         <div class="footer__column">
           <h3>产品中心</h3>
           <ul>
-            <li><router-link to="/products/locks">智能门锁</router-link></li>
-            <li><router-link to="/products/cameras">智能摄像机</router-link></li>
-            <li><router-link to="/products/switches">智能开关</router-link></li>
-            <li><router-link to="/products">全部产品</router-link></li>
+            <li><router-link to="/products" @click="goToCategory('lock')">智能门锁</router-link></li>
+            <li><router-link to="/products" @click="goToCategory('camera')">智能摄像机</router-link></li>
+            <li><router-link to="/products" @click="goToCategory('switch')">智能开关</router-link></li>
+            <li><router-link to="/products" @click="goToCategory('all')">全部产品</router-link></li>
           </ul>
         </div>
         
@@ -73,8 +73,23 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const currentYear = new Date().getFullYear();
+
+const goToCategory = (category) => {
+  // 如果已经在产品页面，只更新分类
+  if (router.currentRoute.value.path === '/products') {
+    window.dispatchEvent(new CustomEvent('updateProductCategory', { detail: category }));
+  } else {
+    // 如果不在产品页面，先导航到产品页面，然后通过 query 参数传递分类
+    router.push({ 
+      path: '/products',
+      query: { category }
+    });
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -177,6 +192,12 @@ const currentYear = new Date().getFullYear();
       }
     }
   }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 @media (max-width: 768px) {
