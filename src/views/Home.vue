@@ -5,9 +5,7 @@
       <div class="hero__content">
         <h1>智能家居的未来</h1>
         <p>打造智能、舒适、安全的居住环境</p>
-        <router-link to="/products" class="btn btn--primary"
-          >了解更多</router-link
-        >
+        <router-link to="/products" class="btn btn--primary">了解更多</router-link>
       </div>
       <div class="hero__image">
         <img src="@/assets/images/hero.jpg" alt="Smart Home" />
@@ -23,16 +21,15 @@
             v-for="product in products"
             :key="product.id"
             class="product-card"
+            @click="goToProductCategory(product.category)"
           >
-            <router-link :to="'/products/' + product.id">
-              <div class="product-card__image">
-                <img :src="product.image" :alt="product.name" />
-              </div>
-              <div class="product-card__content">
-                <h3>{{ product.name }}</h3>
-                <p>{{ product.description }}</p>
-              </div>
-            </router-link>
+            <div class="product-card__image">
+              <img :src="product.image" :alt="product.name" />
+            </div>
+            <div class="product-card__content">
+              <h3>{{ product.name }}</h3>
+              <p>{{ product.description }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -87,25 +84,31 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 import img1 from "@/assets/images/test2.png";
 import img2 from "@/assets/images/test2.png";
 import img3 from "@/assets/images/test2.png";
 
+const router = useRouter();
+
 const products = ref([
   {
     id: 'locks',
+    category: 'lock',
     name: "智能门锁",
     description: "指纹解锁，APP远程控制，多重安全防护",
     image: img1,
   },
   {
     id: 'cameras',
+    category: 'camera',
     name: "智能摄像机",
     description: "1080P高清画质，AI人形检测，双向通话",
     image: img2,
   },
   {
     id: 'switches',
+    category: 'switch',
     name: "智能开关",
     description: "随时控制家中电器，定时开关，场景联动",
     image: img3,
@@ -149,6 +152,13 @@ const solutions = ref([
     link: "/solutions/security",
   },
 ]);
+
+const goToProductCategory = (category) => {
+  router.push({
+    path: '/products',
+    query: { category }
+  });
+};
 </script>
 
 <style lang="scss" scoped>

@@ -22,9 +22,9 @@
     </div>
 
     <!-- 产品列表 -->
-    <section class="products-section">
+    <section ref="productsSection" class="products-section">
       <div class="container">
-        <div class="products-grid">
+        <div ref="productsGrid" class="products-grid">
           <div 
             v-for="product in filteredProducts" 
             :key="product.id" 
@@ -55,12 +55,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import productImage from '@/assets/images/test2.png';
 
 const router = useRouter();
 const route = useRoute();
+const productsSection = ref(null);
 
 const categories = [
   { id: 'all', name: '全部产品' },
@@ -70,6 +71,27 @@ const categories = [
 ];
 
 const currentCategory = ref('all');
+
+// 监听分类变化，滚动到产品列表顶部
+watch(currentCategory, () => {
+  if (productsSection.value) {
+    // 获取分类导航栏的高度
+    const categoryNav = document.querySelector('.category-nav');
+    const categoryNavHeight = categoryNav ? categoryNav.offsetHeight : 0;
+    
+    // 获取顶部导航栏的高度（假设是60px，与CSS中的padding-top相同）
+    const topNavHeight = 60;
+    
+    // 计算目标滚动位置
+    const targetPosition = productsSection.value.offsetTop - topNavHeight - categoryNavHeight;
+    
+    // 平滑滚动到目标位置
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  }
+});
 
 // 从 URL query 参数中获取初始分类
 onMounted(() => {
@@ -172,7 +194,17 @@ const filteredProducts = computed(() => {
 });
 
 const goToProduct = (id) => {
-  router.push(`/products/${id}`);
+  // 根据产品ID确定路由路径
+  const routeMap = {
+    'lock-1': '/products/locks/smart-lock-pro',
+    'lock-2': '/products/locks/face-lock',
+    'camera-1': '/products/cameras/smart-camera-2k',
+    'camera-2': '/products/cameras/outdoor-camera',
+    'switch-1': '/products/switches/smart-panel',
+    'switch-2': '/products/switches/dimmer-switch'
+  };
+  
+  router.push(routeMap[id]);
 };
 </script>
 

@@ -12,9 +12,34 @@ const routes = [
     component: () => import('@/views/Products.vue')
   },
   {
-    path: '/products/:id',
-    name: 'ProductDetail',
-    component: () => import('@/views/products/ProductDetail.vue')
+    path: '/products/locks/smart-lock-pro',
+    name: 'SmartLockPro',
+    component: () => import('@/views/products/locks/SmartLockPro.vue')
+  },
+  {
+    path: '/products/locks/face-lock',
+    name: 'FaceLock',
+    component: () => import('@/views/products/locks/FaceLock.vue')
+  },
+  {
+    path: '/products/cameras/smart-camera-2k',
+    name: 'SmartCamera2K',
+    component: () => import('@/views/products/cameras/SmartCamera2K.vue')
+  },
+  {
+    path: '/products/cameras/outdoor-camera',
+    name: 'OutdoorCamera',
+    component: () => import('@/views/products/cameras/OutdoorCamera.vue')
+  },
+  {
+    path: '/products/switches/smart-panel',
+    name: 'SmartPanel',
+    component: () => import('@/views/products/switches/SmartPanel.vue')
+  },
+  {
+    path: '/products/switches/dimmer-switch',
+    name: 'DimmerSwitch',
+    component: () => import('@/views/products/switches/DimmerSwitch.vue')
   },
   {
     path: '/solutions',
@@ -51,6 +76,49 @@ const routes = [
         component: () => import('@/views/about/Contact.vue')
       }
     ]
+  },
+  // 服务支持路由
+  {
+    path: '/support',
+    children: [
+      {
+        path: 'download',
+        name: 'Download',
+        component: () => import('@/views/NotFound.vue')
+      },
+      {
+        path: 'manual',
+        name: 'Manual',
+        component: () => import('@/views/NotFound.vue')
+      },
+      {
+        path: 'faq',
+        name: 'FAQ',
+        component: () => import('@/views/NotFound.vue')
+      }
+    ]
+  },
+  // 商业合作路由
+  {
+    path: '/cooperation',
+    children: [
+      {
+        path: 'channel',
+        name: 'Channel',
+        component: () => import('@/views/NotFound.vue')
+      },
+      {
+        path: 'oem',
+        name: 'OEM',
+        component: () => import('@/views/NotFound.vue')
+      }
+    ]
+  },
+  // 404 路由，放在最后
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue')
   }
 ]
 
